@@ -32,7 +32,7 @@ export const activityReducer = (
       if (state.activeId) {
         updatedActivities = state.activities.map(activity => activity.id === state.activeId ? action.payload.newActivity : activity)
       } else {
-        updatedActivities = [...state.activities, action.payload.newActivity]
+        updatedActivities = [ ...state.activities, action.payload.newActivity ]
       }
 
       return {

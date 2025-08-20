@@ -1,13 +1,9 @@
+import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { categories } from '../data/categories'
-import { type ChangeEvent, type Dispatch, type FormEvent, useEffect, useState } from 'react'
-import type { Activity } from '../types'
-import type { ActivityActions, ActivityState } from '../reducers/activity-reducer'
 
-type FormProps = {
-  dispatch: Dispatch<ActivityActions>
-  state: ActivityState
-}
+import type { Activity } from '../types'
+import { categories } from '../data/categories'
+import { useActivity } from '../hooks/useActivity.ts'
 
 const initialState: Activity = {
   id: uuidv4(),
@@ -16,18 +12,19 @@ const initialState: Activity = {
   calories: 0
 }
 
-function Form({ dispatch, state }: FormProps) {
-  const [activity, setActivity] = useState<Activity>(initialState)
+function Form() {
+  const { state, dispatch } = useActivity()
+  const [ activity, setActivity ] = useState<Activity>(initialState)
 
   useEffect(() => {
     if (state.activeId) {
       const selectedActivity = state.activities.filter(stateActivity => stateActivity.id === state.activeId)[0]
       setActivity(selectedActivity)
     }
-  }, [state.activeId])
+  }, [ state.activeId ])
 
   const handleChange = (e: ChangeEvent<HTMLSelectElement> | ChangeEvent<HTMLInputElement>) => {
-    const isNumberField = ['category', 'calories'].includes(e.target.id)
+    const isNumberField = [ 'category', 'calories' ].includes(e.target.id)
 
     setActivity({
       ...activity,
@@ -52,7 +49,7 @@ function Form({ dispatch, state }: FormProps) {
   return (
     <form
       className="space-y-5 bg-white shadow p-10 rounded-lg"
-      onSubmit={handleSubmit}
+      onSubmit={ handleSubmit }
     >
       <div className="grid grid-cols-1 gap-3">
         <label
@@ -64,17 +61,17 @@ function Form({ dispatch, state }: FormProps) {
         <select
           id="category"
           className="border border-slate-300 p-2 rounded-lg w-full bg-white"
-          value={activity.category}
-          onChange={handleChange}
+          value={ activity.category }
+          onChange={ handleChange }
         >
-          {categories.map(category => (
+          { categories.map(category => (
             <option
-              value={category.id}
-              key={category.id}
+              value={ category.id }
+              key={ category.id }
             >
-              {category.name}
+              { category.name }
             </option>
-          ))}
+          )) }
         </select>
       </div>
 
@@ -90,8 +87,8 @@ function Form({ dispatch, state }: FormProps) {
           id="name"
           className="border border-slate-300 p-2 rounded-lg"
           placeholder="Ej. Comida, Ensalada, Ejercicio, Correr"
-          value={activity.name}
-          onChange={handleChange}
+          value={ activity.name }
+          onChange={ handleChange }
         />
       </div>
 
@@ -107,16 +104,16 @@ function Form({ dispatch, state }: FormProps) {
           id="calories"
           className="border border-slate-300 p-2 rounded-lg"
           placeholder="Ej. 300, 500"
-          value={activity.calories}
-          onChange={handleChange}
+          value={ activity.calories }
+          onChange={ handleChange }
         />
       </div>
 
       <input
         type="submit"
         className="bg-gray-800 hover:bg-gray-900 w-full p-2 font-bold uppercase text-white cursor-pointer disabled:opacity-50 disabled:cursor-auto"
-        value={activity.category == 1 ? 'Guardar comida' : 'Guardar ejercicio'}
-        disabled={!isValidActivity()}
+        value={ activity.category == 1 ? 'Guardar comida' : 'Guardar ejercicio' }
+        disabled={ !isValidActivity() }
       />
     </form>
   )
